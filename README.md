@@ -5,8 +5,8 @@ This Bash script retrieves detailed information about an IP address using the IP
 ## Usage
 
 1. **Download the Script**
-
-   Save the script to a file, `ipinfo.sh`.
+    ```bash
+    git clone https://github.com/17tayyy/ipInfo/
 
 2. **Make It Executable**
 
