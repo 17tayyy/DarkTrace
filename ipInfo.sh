@@ -1,47 +1,59 @@
 #!/bin/bash
 
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-BLUE='\033[0;34m'
-NC='\033[0m'
+negro="\e[30m"
+verde="\e[32m"
+rojo="\e[31m"
+amarillo="\e[33m"
+blanco="\e[97m"
+morado="\e[35m"
+azul="\e[34m"
+cian="\e[36m"
+reset="\e[0m"
 
-if ! command -v jq &> /dev/null
-then
-    echo -e "${YELLOW}[+] The jq tool is not installed. Installing it now...${NC}"
-    sudo apt-get install -y jq || sudo yum install -y jq || brew install jq
-fi
+echo -e "\n"
+echo -e "${morado}______           _  _____                  ${reset}"
+echo -e "${morado}|  _  \\         | ||_   _|                 ${reset}"
+echo -e "${morado}| | | |__ _ _ __| | _| |_ __ __ _  ___ ___ ${reset}"
+echo -e "${morado}| | | / _\` | '__| |/ / | '__/ _\` |/ __/ _ \\ ${reset}"
+echo -e "${morado}| |/ / (_| | |  |   <| | | | (_| | (_|  __/ ${reset}"
+echo -e "${morado}|___/ \\__,_|_|  |_|\_\\_/_|  \\__,_|\\___\\___|${reset}"
+echo -e "${morado}                                          ${reset}"
+echo -e "${morado}                                          ${reset}"
+echo -e "${amarillo}by: tay${reset}"
+echo -e "${cian}\n----------------------------------------------${reset}"
 
 while true; do
-    echo -e "${BLUE}[?]${NC} ${GREEN}Enter the IP you want to look up (or type 'exit' to quit):${NC}"
-    read -p "$(echo -e "${YELLOW}>>> ${NC}")" ipbas
+    echo -ne "\n$(echo -e ${rojo}[+] ${blanco}Enter IP or Domain: ${reset})" 
+    read target
 
-    if [ "$ipbas" == "exit" ]; then
-        echo -e "${BLUE}[!] Exiting program...${NC}"
-        break
-    fi
-
-    if [ -z "$ipbas" ]; then
-        echo -e "${RED}[!] No IP entered. Please enter a valid IP.${NC}"
+    if [[ -z "$target" ]]; then
+        echo -e "\n${rojo}[ERROR] No IP or Domain provided. Operation aborted.${reset}"
         continue
     fi
 
-    response=$(curl -s "http://ipinfo.io/$ipbas")
+    response=$(curl -s "http://ip-api.com/json/$target")
 
-    if echo "$response" | jq -e .error > /dev/null; then
-        echo -e "${RED}[!] The entered IP is invalid or cannot be located. Try another.${NC}"
+    status=$(echo "$response" | grep -o '"status":"[^"]*' | grep -o '[^"]*$')
+
+    if [[ "$status" != "success" ]]; then
+        echo -e "\n${rojo}[ERROR] Invalid IP or Domain or API request failed.${reset}"
         continue
     fi
 
-    echo -e "${BLUE}================ Information for IP: $ipbas ==================${NC}"
-    echo -e "${GREEN}[+]${NC} IP:             ${YELLOW}$(echo "$response" | jq -r '.ip')${NC}"
-    echo -e "${GREEN}[+]${NC} Hostname:       ${YELLOW}$(echo "$response" | jq -r '.hostname')${NC}"
-    echo -e "${GREEN}[+]${NC} Organization:   ${YELLOW}$(echo "$response" | jq -r '.org')${NC}"
-    echo -e "${GREEN}[+]${NC} City:           ${YELLOW}$(echo "$response" | jq -r '.city')${NC}"
-    echo -e "${GREEN}[+]${NC} Region:         ${YELLOW}$(echo "$response" | jq -r '.region')${NC}"
-    echo -e "${GREEN}[+]${NC} Country:        ${YELLOW}$(echo "$response" | jq -r '.country')${NC}"
-    echo -e "${GREEN}[+]${NC} Postal Code:    ${YELLOW}$(echo "$response" | jq -r '.postal')${NC}"
-    echo -e "${GREEN}[+]${NC} Coordinates:    ${YELLOW}$(echo "$response" | jq -r '.loc')${NC}"
-    echo -e "${GREEN}[+]${NC} Timezone:       ${YELLOW}$(echo "$response" | jq -r '.timezone')${NC}"
-    echo -e "${BLUE}===========================================================${NC}"
+    echo -e "\n${verde}[INFO] TARGET: ${blanco}$target${reset}"
+    echo -e "${cian}-----------------------------------------------${reset}"
+    echo -e "${amarillo}[*] COUNTRY: ${blanco}$(echo "$response" | grep -o '"country":"[^"]*' | grep -o '[^"]*$')${reset}"
+    echo -e "${amarillo}[*] REGION: ${blanco}$(echo "$response" | grep -o '"regionName":"[^"]*' | grep -o '[^"]*$')${reset}"
+    echo -e "${amarillo}[*] CITY: ${blanco}$(echo "$response" | grep -o '"city":"[^"]*' | grep -o '[^"]*$')${reset}"
+    echo -e "${amarillo}[*] ZIP CODE: ${blanco}$(echo "$response" | grep -o '"zip":"[^"]*' | grep -o '[^"]*$')${reset}"
+    echo -e "${amarillo}[*] LATITUDE: ${blanco}$(echo "$response" | grep -o '"lat":[^,]*' | grep -o '[^:]*$')${reset}"
+    echo -e "${amarillo}[*] LONGITUDE: ${blanco}$(echo "$response" | grep -o '"lon":[^,]*' | grep -o '[^:]*$')${reset}"
+    echo -e "${amarillo}[*] TIMEZONE: ${blanco}$(echo "$response" | grep -o '"timezone":"[^"]*' | grep -o '[^"]*$')${reset}"
+    echo -e "${amarillo}[*] ISP: ${blanco}$(echo "$response" | grep -o '"isp":"[^"]*' | grep -o '[^"]*$')${reset}"
+    echo -e "${amarillo}[*] ORGANIZATION: ${blanco}$(echo "$response" | grep -o '"org":"[^"]*' | grep -o '[^"]*$')${reset}"
+    echo -e "${amarillo}[*] AS: ${blanco}$(echo "$response" | grep -o '"as":"[^"]*' | grep -o '[^"]*$')${reset}"
+    echo -e "${cian}------------------------------------------------${reset}"
+
 done
+
+
