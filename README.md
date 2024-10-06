@@ -6,17 +6,17 @@ This Bash script retrieves detailed information about an IP address using the IP
 
 1. **Download the Script**
     ```bash
-    git clone https://github.com/17tayyy/ipInfo/
+    git clone https://github.com/17tayyy/DarkTrace/
 
 2. **Make It Executable**
 
    Grant execute permissions to the script with:
 
    ```bash
-   chmod +x ipinfo.sh
+   chmod +x darktrace.sh
 
 3. **Run the Script**
 
    Execute the script
    ````bash
-   ./ipinfo.sh
+   ./darktrace.sh
